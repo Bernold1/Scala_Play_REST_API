@@ -11,9 +11,9 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 
 #Tasks
 
-GET       /todos                               controllers.ToDoController.getToDos
-GET       /todo/:id/                           controllers.ToDoController.getToDoById(id: UUID)
-POST      /todo                                controllers.ToDoController.addTodo(todo: Todo)
-DELETE    /todo/:id/                           controllers.ToDoController.deleteToDo(id: UUID)
+GET       /todos                               controllers.ToDoController.getToDos()
+GET       /todo/:id/                           controllers.ToDoController.getToDoById(id: Long)
+POST      /todo                                controllers.ToDoController.addTodo
+DELETE    /todo/:id/                           controllers.ToDoController.deleteToDo(id: Long)
 #PATCH     /todo/:id/
 
