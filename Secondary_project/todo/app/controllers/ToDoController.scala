@@ -3,11 +3,12 @@
 package controllers
 
 import javax.inject.{Inject, Singleton}
-import models.ToDoItem
+import models.{ToDoBody, ToDoItem}
 import play.api.mvc._
 import play.api.libs.json._
 
 import scala.collection.mutable.ListBuffer
+import scala.util.Try
 
 //Following the finch API and using singletons to reuse a single instance for simplicity sake
 @Singleton
@@ -43,10 +44,36 @@ extends BaseController {
   }
 
   //https://www.playframework.com/documentation/2.8.x/ScalaBodyParsers
-  def addTodo = Action{ implicit request =>
-  val requestBody = request.body.asJson
-  //val toDo: Option
-    //todo: add get id and addtodo to routing file
+  //https://www.playframework.com/documentation/2.0/ScalaJsonRequests
+  //Using Option is smarter here but is not used for the sake of not using FP methods
+  def addTodo = Action(parse.json){implicit request =>
+    val todoName = (request.body \"taskName").get
+    val todoCompleted = (request.body \"completed").get
+    val randomId = new scala.util.Random
+    //randomId.setSeed(100L)
+    val id = randomId.nextLong(Long.MaxValue)
 
+    if(todoName != null && todoCompleted != null){
+      val todoNameStringified = todoName.toString()
+      val todoBoolStringified = todoCompleted.toString().toBoolean
+      val newTodo = ToDoItem(id, todoNameStringified, todoBoolStringified)
+      todoList += newTodo
+      Created(Json.toJson(newTodo))
+    }
+    else {
+      BadRequest("Error when processing request")
+    }
+  }
+
+  //Inspired bY: https://stackoverflow.com/questions/32736430/how-to-find-the-index-in-arraybuffer-using-scala
+  def deleteToDoById(todoId: Long): Action[AnyContent] = Action {
+    val ItemSearch = todoList.zipWithIndex.find({ case  (value, _) => value == Some(todoId)}).map(_._2)
+    ItemSearch match {
+      case Some(value) => {
+        todoList.remove(value)
+        Ok(Json.toJson(value))
+      }
+      case None => NotFound
+    }
   }
 }

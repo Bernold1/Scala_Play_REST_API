@@ -7,4 +7,14 @@
 GET       /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
 
 
+#GET ENDPOINTS
 GET       /todos                      controllers.ToDoController.getTodos
+GET       /todo/:todoId               controllers.ToDoController.getToDoById(todoId: Long)
+
+#POST ENDPOINTS
+POST      /todo                       controllers.ToDoController.addTodo
+
+#DELETE ENDPOINTS
+DELETE   /todo/:todoId                controllers.ToDoController.deleteToDoById(todoId: Long)
+
+#PATCH ENDPOINTS
