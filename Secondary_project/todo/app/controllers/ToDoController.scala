@@ -21,8 +21,8 @@ extends BaseController {
 
   //Injecting som test subjects
   todoList += ToDoItem(1, "Test Todo 1", true)
-  todoList += ToDoItem(1, "Test Todo 2", false)
-
+  todoList += ToDoItem(2, "Test Todo 2", false)
+  todoList += ToDoItem(3, "Test Todo 3", false)
 
   //Here we abstract from pure functions found in FP and start using states again.
   def getTodos: Action[AnyContent] = Action {
@@ -50,7 +50,6 @@ extends BaseController {
     val todoName = (request.body \"taskName").get
     val todoCompleted = (request.body \"completed").get
     val randomId = new scala.util.Random
-    //randomId.setSeed(100L)
     val id = randomId.nextLong(Long.MaxValue)
 
     if(todoName != null && todoCompleted != null){
@@ -67,11 +66,25 @@ extends BaseController {
 
   //Inspired bY: https://stackoverflow.com/questions/32736430/how-to-find-the-index-in-arraybuffer-using-scala
   def deleteToDoById(todoId: Long): Action[AnyContent] = Action {
-    val ItemSearch = todoList.zipWithIndex.find({ case  (value, _) => value == Some(todoId)}).map(_._2)
+    val ItemSearch = todoList.find(todo => todo.id == todoId)
     ItemSearch match {
       case Some(value) => {
-        todoList.remove(value)
+        todoList -= value
         Ok(Json.toJson(value))
+      }
+      case None => NotFound
+    }
+  }
+
+
+  def completeToDo(todoId: Long):Action[AnyContent] = Action {
+    val ItemSearch = todoList.find(todo => todo.id == todoId)
+    ItemSearch match {
+      case Some(value) => {
+        val index = todoList.indexOf(value)
+        val updatedTodo = ToDoItem(value.id, value.taskName, true)
+        val toDoCompleted = todoList.update(index, updatedTodo)
+        Ok("Completed")
       }
       case None => NotFound
     }
