@@ -18,5 +18,4 @@ POST      /todo                       controllers.ToDoController.addTodo
 DELETE    /todo/:todoId               controllers.ToDoController.deleteToDoById(todoId: Long)
 
 #PATCH ENDPOINTS
-
 PATCH    /todo/:todoId                controllers.ToDoController.completeToDo(todoId: Long)
